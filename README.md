@@ -1,5 +1,4 @@
 # 🔁 Auto Retry Clicker (PowerShell)
-
 This script automatically clicks the **Retry button** in the Antigravity window.
 
 ---
@@ -11,7 +10,7 @@ Right-click PowerShell → Run as Administrator
 
 ---
 
-Copy file path
+### 2️⃣ Copy File Path
 - Right-click `retry.ps1`
 - Click **Copy as Path**
 
@@ -19,10 +18,11 @@ Copy file path
 
 ### 3️⃣ Run in PowerShell
 Paste and run:
-
 ```powershell
 & "PASTE_YOUR_FILE_PATH_HERE"
+```
 
-### 2️⃣ Example:
-
+### Example:
+```powershell
 & "C:\Users\Shakil\Desktop\retry.ps1"
+```
