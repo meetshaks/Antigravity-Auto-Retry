@@ -1,10 +1,11 @@
 Add-Type -AssemblyName UIAutomationClient
 
-$blockedApps = @("chrome", "msedge", "firefox", "claude", "opera")
+$blockedApps = @("chrome", "msedge", "firefox", "claude")
+
+$lastState = ""
 
 while ($true) {
 
-    # 1️⃣ ONLY Antigravity window
     $proc = Get-Process | Where-Object {
         $_.MainWindowHandle -ne 0 -and
         $_.MainWindowTitle -like "*Antigravity*"
@@ -16,7 +17,6 @@ while ($true) {
             $hwnd = $proc.MainWindowHandle
             $element = [System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
 
-            # 2️⃣ Strict Retry button match
             $condition = New-Object System.Windows.Automation.AndCondition(
                 (New-Object System.Windows.Automation.PropertyCondition(
                     [System.Windows.Automation.AutomationElement]::NameProperty, "Retry"
@@ -32,7 +32,6 @@ while ($true) {
                 $condition
             )
 
-            # 3️⃣ FINAL SAFETY CHECK (process whitelist)
             if ($btn -and ($blockedApps -notcontains $proc.ProcessName.ToLower())) {
 
                 $invokePattern = $btn.GetCurrentPattern(
@@ -40,12 +39,23 @@ while ($true) {
                 )
 
                 $invokePattern.Invoke()
-                Write-Host "Retry clicked ONLY in Antigravity"
+
+                if ($lastState -ne "clicked") {
+                    Write-Host "Retry clicked ONLY in Antigravity"
+                    $lastState = "clicked"
+                }
+
+            }
+            else {
+                $lastState = "idle"
             }
 
         }
         catch {
-            Write-Host "Skipped cycle (safe mode)"
+            if ($lastState -ne "safe") {
+                Write-Host "Safe mode active"
+                $lastState = "safe"
+            }
         }
     }
 
